@@ -146,24 +146,49 @@ export const updateIdea = async (req, res) => {
 export const deleteIdea = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("Received delete request for ID:", id);
 
     const idea = await BusinessIdea.findById(id);
+
     if (!idea) {
-      return res
-        .status(404)
-        .json({ message: "Business Idea with id " + id + " not found." });
+      console.log("Idea not found:", id);
+      return res.status(404).json({ message: `Idea with ID ${id} not found.` });
     }
 
     // Delete the idea
-    await idea.remove();
+    const deletedIdea = await BusinessIdea.findByIdAndDelete(id);
+    console.log("Deleted idea:", deletedIdea);
 
     res.status(200).json({
-      message: "Business Idea with id " + id + " deleted successfully!",
+      message: `Business Idea with ID ${id} deleted successfully!`,
     });
   } catch (error) {
-    console.error("Error deleting Business idea:", error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while deleting the Business idea." });
+    console.error("Error deleting Business idea:", error.message);
+    res.status(500).json({ message: `Error: ${error.message}` });
   }
 };
+
+// export const deleteIdea = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const idea = await BusinessIdea.findById(id);
+//     if (!idea) {
+//       return res
+//         .status(404)
+//         .json({ message: "Business Idea with id " + id + " not found." });
+//     }
+
+//     // Delete the idea
+//     await idea.remove();
+
+//     res.status(200).json({
+//       message: "Business Idea with id " + id + " deleted successfully!",
+//     });
+//   } catch (error) {
+//     console.error("Error deleting Business idea:", error);
+//     res
+//       .status(500)
+//       .json({ message: "An error occurred while deleting the Business idea." });
+//   }
+// };

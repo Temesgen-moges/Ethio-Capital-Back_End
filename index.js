@@ -12,6 +12,7 @@ import { Server } from "socket.io";
 import Message from "./models/Message.js";
 import messageRouter from "./routes/Message.js";
 import connectDB from "./util/ConnectDb.js"; // Updated import for Mongoose connection
+import boardRouter from "./routes/Bord.js";
 
 dotenv.config();
 
@@ -65,7 +66,7 @@ app.use("/api/v1", businessRouter);
 app.use("/api/v1", blogRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", messageRouter);
-
+app.use("/api/v1", boardRouter);
 const PORT = 3001;
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);

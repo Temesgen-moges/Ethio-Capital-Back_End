@@ -1,7 +1,7 @@
 import User from "../../models/User.js";
 import UserProfile from "../../models/UserProfile.js";
 import fs from "fs";
-
+import Conversation from "../../models/Conversation.js";
 export const getUsers = async (req, res) => {
   try {
     console.log("the dispatch is working");
@@ -30,6 +30,34 @@ export const getUserById = async (req, res) => {
     res
       .status(500)
       .json({ message: "An error occurred while retrieving the user." });
+  }
+};
+
+export const getUserByChat = async (req, res) => {
+  try {
+    const { userId } = req.user; // Get the current user's ID from authentication
+
+    // Fetch all conversations involving the current user
+    const conversations = await Conversation.find({
+      $or: [{ userId }, { investorId: userId }], // Adjust based on your schema
+    }).lean();
+
+    // Extract unique investor IDs from the conversations
+    const investorIds = [
+      ...new Set(
+        conversations.map((conversation) => conversation.investorId) // Adjust based on your schema
+      ),
+    ];
+
+    // Fetch full details of these investors
+    const investors = await User.find({ _id: { $in: investorIds } });
+
+    res.status(200).json(investors);
+  } catch (error) {
+    console.error("Error fetching investors:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching investors." });
   }
 };
 

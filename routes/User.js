@@ -13,6 +13,7 @@ const userRouter = express.Router();
 import { uploadFiles } from "../middleware/multerConfig.js";
 
 userRouter.get("/users", authenticate, getUsers);
+router.get("/user/conversations", authenticate, getUserByChat);
 userRouter.get("/user/", authenticate, getUserById);
 userRouter.get("/user-profile", authenticate, getUserProfile);
 userRouter.get("/entrepreneur-profile", authenticate, getEntrepreneursProfile);

@@ -37,20 +37,32 @@ export const getUserByChat = async (req, res) => {
   try {
     const { userId } = req.user; // Get the current user's ID from authentication
 
-    // Fetch all conversations involving the current user
+    // Fetch all conversations where the user is a participant
     const conversations = await Conversation.find({
-      $or: [{ userId }, { investorId: userId }], // Adjust based on your schema
+      participants: userId, // Find all conversations where user is included
     }).lean();
 
-    // Extract unique investor IDs from the conversations
+    // Extract unique investor IDs (other participant)
     const investorIds = [
       ...new Set(
-        conversations.map((conversation) => conversation.investorId) // Adjust based on your schema
+        conversations
+          .map((conversation) =>
+            conversation.participants.find((id) => id.toString() !== userId)
+          )
+          .filter(Boolean) // Remove undefined values
       ),
     ];
 
+    // Return empty list if no investors found
+    if (investorIds.length === 0) {
+      return res.status(200).json([]);
+    }
+
     // Fetch full details of these investors
-    const investors = await User.find({ _id: { $in: investorIds } });
+    const investors = await UserProfile.find(
+      { user: { $in: investorIds } },
+      "photo"
+    ).populate("user", "fullName");
 
     res.status(200).json(investors);
   } catch (error) {

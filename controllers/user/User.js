@@ -36,7 +36,7 @@ export const getUserById = async (req, res) => {
 export const getUserByChat = async (req, res) => {
   try {
     const { userId } = req.user; // Get the current user's ID from authentication
-
+    console.log("userID:", userId);
     // Fetch all conversations where the user is a participant
     const conversations = await Conversation.find({
       participants: userId, // Find all conversations where user is included
@@ -53,17 +53,19 @@ export const getUserByChat = async (req, res) => {
       ),
     ];
 
+    console.log("investorID:", investorIds);
     // Return empty list if no investors found
+
     if (investorIds.length === 0) {
       return res.status(200).json([]);
     }
 
     // Fetch full details of these investors
-    const investors = await UserProfile.find(
-      { user: { $in: investorIds } },
-      "photo"
-    ).populate("user", "fullName");
-
+    const investors = await User.find(
+      { _id: { $in: investorIds } },
+      "fullName"
+    );
+    console.log("inve:", investors);
     res.status(200).json(investors);
   } catch (error) {
     console.error("Error fetching investors:", error);

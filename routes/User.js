@@ -7,6 +7,7 @@ import {
   createProfile,
   updateProfile,
   deleteProfile,
+  getUserByChat,
 } from "../controllers/user/User.js";
 import { authenticate } from "../middleware/Authenticate.js";
 const userRouter = express.Router();
